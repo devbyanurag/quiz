@@ -1,0 +1,39 @@
+.container{
+    padding: 20px;
+    .heading{
+        width: 80%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        margin: 40px auto;   
+        p{
+            text-align: center;
+        }
+        .divider{
+            width: 100px;
+            height: 5px;
+            background-color: gray;
+            margin: 20px 0;
+            border-radius: 20px;
+        }
+    }
+    .categories_container{
+        .heading{
+            margin: auto;
+            color: gray;
+        }
+        .cards_container{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 10px 0;
+            &:hover{
+                cursor: pointer;
+                
+            }
+        }
+
+
+    }
+}

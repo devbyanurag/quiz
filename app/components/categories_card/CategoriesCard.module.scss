@@ -1,0 +1,58 @@
+.card {
+  height: 200px;
+  width: 250px;
+  background-color: white;
+  margin: 20px;
+  border-radius: 5px;
+  color: rgb(83, 83, 83);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  .bgID {
+    font-size: 150px;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    opacity: 0.1;
+  }
+  .cardCategory {
+    font-size: 30px;
+    font-weight: bolder;
+    text-align: center;
+  }
+}
+.varient_blue {
+  color: #09c0d8;
+  border: 1px solid #09c0d8;
+  &:hover {
+    color: white;
+    background-color: #09c0d8;
+  }
+}
+.varient_green {
+  color: #1ee008;
+  border: 1px solid #1ee008;
+  &:hover {
+    color: white;
+    background-color: #1ee008;
+  }
+}
+.varient_yellow {
+  color: #fcb51d;
+  border: 1px solid #fcb51d;
+  &:hover {
+    color: white;
+    background-color: #fcb51d;
+  }
+}
+.varient_orange {
+  color: #fc641d;
+  border: 1px solid #fc641d;
+  &:hover {
+    color: white;
+    background-color: #fc641d;
+  }
+}
