@@ -12,6 +12,7 @@ export interface Question {
     correct_answer: string;
     incorrect_answers: string[];
     id: number; // Optional, as it's added later
+    _id: string;
 }
 
 export interface DifficultyLevel {
@@ -28,4 +29,10 @@ export interface Category {
 export interface Data {
     [key: string]: Category;
     
+}
+
+
+export interface userAnswersType {
+    id: number;
+    userAnswer: string | null
 }

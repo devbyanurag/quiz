@@ -4,14 +4,12 @@ import { useParams } from 'next/navigation'
 import styles from "./page.module.scss";
 import QuestionOptions from '@/app/components/question_options/question_options';
 import { api_backend } from '@/app/api/api';
-import { Question } from '@/app/utils/types';
+import { Question, userAnswersType } from '@/app/utils/types';
 import DOMPurify from 'dompurify';
+import { randomizeOption } from '@/app/utils/services';
+import ResultContainer from '@/app/components/result_container/result_container';
 
 
-interface userAnswersType {
-    id: number;
-    userAnswer: string | null
-}
 
 
 const QuizType = () => {
@@ -21,7 +19,7 @@ const QuizType = () => {
 
     const [difficultyLevel, setDifficultyLevel] = useState<string>('easy');
     const [selectedTimerOption, setSelectedTimerOption] = useState<number | null>(null);
-    const [questionLimit, setquestionLimit] = useState<number>(10);
+    const [questionLimit, setquestionLimit] = useState<number>(2);
     const handleDifficultyChange = (difficulty: string) => {
         setDifficultyLevel(difficulty);
     };
@@ -50,72 +48,57 @@ const QuizType = () => {
     const [loading, setLoading] = useState<boolean>(false)
     const [userOptions, setUserOptions] = useState<string[]>([])
     const [currentQueIndex, setCurrentQueIndex] = useState<number>(0)
+    const [generateResult, setGenerateResult] = useState<boolean>(false)
 
     useEffect(() => {
         if (questionList.length > 0) {
-            console.log("first")
             setCurrentQuestion(questionList[currentQueIndex]);
-            const optionList = questionList[currentQueIndex].incorrect_answers;
-            optionList.push(questionList[currentQueIndex].correct_answer);
-            const options = randomizeOption(optionList)
-            setUserOptions(options)
+            let optionList = questionList[currentQueIndex].incorrect_answers;
+            optionList = [...optionList, questionList[currentQueIndex].correct_answer];
+            setUserOptions(randomizeOption(optionList))
         }
     }, [questionList])
 
-    const randomizeOption = (optionList: string[]): string[] => {
-        for (let i = optionList.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [optionList[i], optionList[j]] = [optionList[j], optionList[i]];
-        }
-        return optionList;
-    };
+
 
 
     const handleStart = async () => {
-        console.log(difficultyLevel, selectedTimerOption, questionLimit)
         try {
             const response = await api_backend.post(`quiz/questions`, {
                 category: category,
                 difficulty: difficultyLevel,
                 numberOfQuestions: questionLimit
-
             });
             setQuestionList(response.data.questions)
+            console.log(response.data.questions)
         } catch (error) {
             console.error('Error fetching weather data:', error);
         }
     }
 
     const handleNextQue = (selectedAns: string) => {
-
         if (currentQuestion) {
             if (currentQueIndex < questionList.length - 1) {
-                setUserAnswers((prevUserAnswers) => {
-                    const updatedUserAnswers = [...prevUserAnswers];
-                    updatedUserAnswers[currentQueIndex - 1] = {
-                        id: currentQuestion?.id,
-                        userAnswer: selectedAns,
-                    };
-                    return updatedUserAnswers;
-                });
+                setUserAnswers((prevUserAnswers) => [
+                    ...prevUserAnswers,
+                    { id: currentQuestion.id, userAnswer: selectedAns },
+                ]);
                 setCurrentQuestion(questionList[currentQueIndex + 1])
-                const options = questionList[currentQueIndex + 1].incorrect_answers
-                options.push(questionList[currentQueIndex + 1].correct_answer)
+                let options = questionList[currentQueIndex + 1].incorrect_answers
+                options = [...options, questionList[currentQueIndex + 1].correct_answer];
                 setUserOptions(randomizeOption(options))
-
                 setCurrentQueIndex(currentQueIndex + 1)
             }
             else {
-                console.log("fininsh")
-                console.log(userAnswers)
+                setUserAnswers((prevUserAnswers) => [
+                    ...prevUserAnswers,
+                    { id: currentQuestion.id, userAnswer: selectedAns },
+                ]);
+                setGenerateResult(true)
+
             }
         }
     };
-
-
-
-
-
 
     return (
         <div className={styles.container}>
@@ -136,12 +119,12 @@ const QuizType = () => {
                         </div>
                     }
                     {
-                        (currentQuestion) ?
+                        (currentQuestion) ? !generateResult ?
                             <div className={styles.questionStart}>
                                 <div className={styles.heading}>
                                     <div> Question No: {currentQueIndex + 1}</div>
                                     <div>Time Remaining</div>
-                                    <div>Question Left {userAnswers.length}</div>
+                                    <div>Question Left {questionLimit - (currentQueIndex + 1)}</div>
                                 </div>
                                 <div className={styles.questionContainer}>
                                     <div className={styles.question}> <p>{DOMPurify.sanitize(currentQuestion.question)}</p></div>
@@ -151,12 +134,13 @@ const QuizType = () => {
                                         })}
                                     </div>
                                 </div>
-                            </div>
+                            </div> : <ResultContainer questionList={questionList} userAnswers={userAnswers} />
                             :
                             <div className={styles.startContainer}>
                                 <button onClick={handleStart}>Start</button>
                             </div>
                     }
+
 
 
 

@@ -1,0 +1,34 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .resultDetails{
+        display: flex;
+        justify-content: space-evenly;
+        width: 100%;
+        align-items: center;
+        button{
+
+        }
+    }
+    .questionListContainer{
+        width: 100%;
+        padding: 10px;
+        .question{
+            margin: 10px;
+        }
+        .answer{
+            border: 1px solid black;
+            padding: 10px;
+            margin: 2px;
+            text-align: center;
+            background-color: white;
+        }
+        .correctAnswer{
+            background-color: rgb(179, 242, 179);
+        }
+        .wrongAnswer{
+            background-color: rgb(242, 90, 90);
+        }
+    }
+}
