@@ -19,7 +19,7 @@ const QuizType = () => {
 
     const [difficultyLevel, setDifficultyLevel] = useState<string>('easy');
     const [selectedTimerOption, setSelectedTimerOption] = useState<number | null>(null);
-    const [questionLimit, setquestionLimit] = useState<number>(2);
+    const [questionLimit, setquestionLimit] = useState<number>(10);
     const handleDifficultyChange = (difficulty: string) => {
         setDifficultyLevel(difficulty);
     };
