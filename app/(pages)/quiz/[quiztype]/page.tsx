@@ -23,7 +23,6 @@ const QuizType = () => {
     const handleDifficultyChange = (difficulty: string) => {
         setDifficultyLevel(difficulty);
     };
-
     const handleQuestionLimit = (typeLimit: "INC" | "DEC") => {
         if (typeLimit === "DEC") {
             if (questionLimit > 1) {
@@ -43,19 +42,22 @@ const QuizType = () => {
 
     const [questionList, setQuestionList] = useState<Question[]>([])
     const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null)
-
-    const [userAnswers, setUserAnswers] = useState<userAnswersType[]>([])
+    const [userAnswers, setUserAnswers] = useState<userAnswersType[]>([]);
     const [loading, setLoading] = useState<boolean>(false)
     const [userOptions, setUserOptions] = useState<string[]>([])
     const [currentQueIndex, setCurrentQueIndex] = useState<number>(0)
     const [generateResult, setGenerateResult] = useState<boolean>(false)
+    const [timer, setTimer] = useState<number | null>(null);
 
     useEffect(() => {
         if (questionList.length > 0) {
+            setLoading(true)
             setCurrentQuestion(questionList[currentQueIndex]);
             let optionList = questionList[currentQueIndex].incorrect_answers;
             optionList = [...optionList, questionList[currentQueIndex].correct_answer];
             setUserOptions(randomizeOption(optionList))
+            setLoading(false)
+
         }
     }, [questionList])
 
@@ -64,13 +66,15 @@ const QuizType = () => {
 
     const handleStart = async () => {
         try {
+            setLoading(true)
             const response = await api_backend.post(`quiz/questions`, {
                 category: category,
                 difficulty: difficultyLevel,
                 numberOfQuestions: questionLimit
             });
             setQuestionList(response.data.questions)
-            console.log(response.data.questions)
+            setLoading(false)
+            setTimer(selectedTimerOption);
         } catch (error) {
             console.error('Error fetching weather data:', error);
         }
@@ -88,6 +92,8 @@ const QuizType = () => {
                 options = [...options, questionList[currentQueIndex + 1].correct_answer];
                 setUserOptions(randomizeOption(options))
                 setCurrentQueIndex(currentQueIndex + 1)
+                setTimer(selectedTimerOption);
+
             }
             else {
                 setUserAnswers((prevUserAnswers) => [
@@ -99,6 +105,34 @@ const QuizType = () => {
             }
         }
     };
+
+    const handleStartAgain = () => {
+        setLoading(true)
+        setUserAnswers([])
+        setQuestionList([])
+        setCurrentQuestion(null)
+        setGenerateResult(false)
+        setCurrentQueIndex(0)
+        handleStart()
+        setLoading(false)
+    }
+
+    useEffect(() => {
+        let timerId: NodeJS.Timeout;
+
+        if (timer !== null && timer > 0) {
+            timerId = setInterval(() => {
+                setTimer((prevTime) => (prevTime !== null ? prevTime - 1 : null));
+            }, 1000);
+        } else if (timer === 0) {
+            handleNextQue('---');
+        }
+
+        return () => clearInterval(timerId);
+    }, [timer]);
+
+
+
 
     return (
         <div className={styles.container}>
@@ -118,12 +152,13 @@ const QuizType = () => {
                             <img width="100" height="100" src="https://img.icons8.com/ios-filled/50/loading.png" alt="loading" />
                         </div>
                     }
+
                     {
-                        (currentQuestion) ? !generateResult ?
+                        currentQuestion ? !generateResult ?
                             <div className={styles.questionStart}>
                                 <div className={styles.heading}>
                                     <div> Question No: {currentQueIndex + 1}</div>
-                                    <div>Time Remaining</div>
+                                    <div>Time Remaining {timer !== null && <p>{timer} seconds</p>}</div>
                                     <div>Question Left {questionLimit - (currentQueIndex + 1)}</div>
                                 </div>
                                 <div className={styles.questionContainer}>
@@ -134,7 +169,7 @@ const QuizType = () => {
                                         })}
                                     </div>
                                 </div>
-                            </div> : <ResultContainer questionList={questionList} userAnswers={userAnswers} />
+                            </div> : <ResultContainer questionList={questionList} userAnswers={userAnswers} handleStartAgain={handleStartAgain} />
                             :
                             <div className={styles.startContainer}>
                                 <button onClick={handleStart}>Start</button>
