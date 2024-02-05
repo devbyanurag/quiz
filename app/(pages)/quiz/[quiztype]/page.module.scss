@@ -3,6 +3,15 @@
   .heading {
     text-align: center;
     margin: 10px;
+    .timerContainer{
+      border: 2px solid black;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
   .quizContainer {
     display: flex;

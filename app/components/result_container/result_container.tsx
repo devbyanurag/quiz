@@ -16,21 +16,21 @@ const ResultContainer = ({ userAnswers, questionList, handleStartAgain }: Result
     const [correctAnswers, setCorrectAnswers] = useState<number>(0)
 
     useEffect(() => {
+        const handleScore = () => {
+            let score = 0
+            questionList.map((question: Question, index) => {
+                if (question.correct_answer === userAnswers[index].userAnswer) {
+                    score = score + 1
+                }
+            })
+            setCorrectAnswers(score)
+            setScorePercentage((score / questionList.length) * 100)
+        }
         handleScore()
-
     }, [])
 
 
-    const handleScore = () => {
-        let score = 0
-        questionList.map((question: Question, index) => {
-            if (question.correct_answer === userAnswers[index].userAnswer) {
-                score = score + 1
-            }
-        })
-        setCorrectAnswers(score)
-        setScorePercentage((score / questionList.length) * 100)
-    }
+
 
 
     return (
@@ -53,7 +53,7 @@ const ResultContainer = ({ userAnswers, questionList, handleStartAgain }: Result
 
                     return (
                         <div key={question.id}>
-                            <p className={styles.question}>{question.question}</p>
+                            <p className={styles.question}>Question: {index + 1} {question.question} {userAnswers[index].userAnswer === '---' ? <p className={styles.unattempted}>Unattempted</p> : question.correct_answer === userAnswers[index].userAnswer ? <p className={styles.correct}>Correct</p> : <p className={styles.wrongQue}>Wrong</p>}</p>
                             {options.map(option => {
                                 if (userAnswers[index].userAnswer === option) {
                                     return <div key={option} className={`${styles.answer} ${question.correct_answer === option ? styles.correctAnswer : styles.wrongAnswer}`}><p>{option}</p></div>

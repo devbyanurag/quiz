@@ -158,7 +158,8 @@ const QuizType = () => {
                             <div className={styles.questionStart}>
                                 <div className={styles.heading}>
                                     <div> Question No: {currentQueIndex + 1}</div>
-                                    <div>Time Remaining {timer !== null && <p>{timer} seconds</p>}</div>
+                                    <div> {timer !== null && <p>Time Remaining {timer} seconds</p>}</div>
+
                                     <div>Question Left {questionLimit - (currentQueIndex + 1)}</div>
                                 </div>
                                 <div className={styles.questionContainer}>
@@ -175,11 +176,6 @@ const QuizType = () => {
                                 <button onClick={handleStart}>Start</button>
                             </div>
                     }
-
-
-
-
-
                 </div>
 
             </div>
