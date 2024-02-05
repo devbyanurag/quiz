@@ -1,5 +1,5 @@
 export const BASE_URL_BACKEND_LOCAL="http://localhost:8002"
-export const BASE_URL_BACKEND_SERVER="http://localhost:8002"
+export const BASE_URL_BACKEND_SERVER="https://quizapp-backend-lust.onrender.com"
 
 export const CategoriesCard_variant=["BLUE","ORANGE","GREEN","YELLOW"]
 
